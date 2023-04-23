@@ -1,80 +1,128 @@
-<!-- <!DOCTYPE html>
-<html>
-<head>
-	<title>Object Detection and Audio Description</title>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-</head>
-<body>
-	<h1>Object Detection and Audio Description</h1>
-	<form action="/" method="POST" enctype="multipart/form-data">
-		<input type="file" name="image">
-		<input type="submit" value="Upload">
-	</form>
-	<div id="labels"></div>
-	<audio id="audio"></audio>
+	<!DOCTYPE html>
+	<html>
+	<head>
+		<title>Object Detection Result</title>
+		<style>
+			.div1 {
+				width: 400px;
+				height: auto;  
+				padding: 50px;
+				border: 3px solid rgb(23, 196, 0);
+			}
+			.div2 {
+				width: 400px;
+				height: 500px;  
+				padding: 45px;
+				border: 2px dashed rgb(1, 83, 0);
+			}
+			div.gallery {
+				margin: 5px;
+				text-align: center;
+				display: inline-block;
+				border: 1px solid #ccc;
+				width: 300px;
+				padding: 50px;
+			}
+
+			div.gallery:hover {
+				border: 1px solid #777;
+			}
+
+			div.gallery img {
+				width: 100%;
+				height: auto;
+			}
+
+			div.desc {
+				/* padding: 15px; */
+				text-align: center;
+			}
+		</style>
+	</head>
+	<body>
+		<h1>PicDetective Results</h1>
+
+		<div class="div1">
+			<img src="{{ image_url }}" alt="Uploaded image" style="width: 400px; height: auto;">
+			{% if labels %}
+				<!-- <div class="desc">  -->
+						<p>This image contains:-</p>
+					<ul>
+						{% for label in labels %}
+							<li>{{ label }}</li>
+						{% endfor %}
+					</ul>
+				<!-- </div>	 -->
+				<p> Audio Description <br><audio controls preload="auto">
+					<!-- <source src="description.mp3" type="audio/mpeg"> -->
+					<!-- <source src="{{ url_for('static', filename='description.mp3') }}" type="file/mpeg"> -->
+					<source src="{{ url_for('serve_audio') }}?{{ query_string }}" type="audio/mpeg">
+					Your browser does not support the audio element.
+				</audio></p>
+				<p>
+		</div>
+			<div>
+				<h2>Top 5 Related Images:</h2>
+				<div class="gallery">
+					{% for i in range(5) %}
+					Image {{i+1}}
+					<br><br>
+					<img src="{{ closest_images[i] }}" alt="Related image" width="200px">
+					<div class="desc">
+						<p>This image contains:-</p>
+							<ul>
+								{% for label in relevant_labels[i] %}
+									<li>{{ label }}</li>
+								{% endfor %}
+							</ul>
+							{% set audio_url = url_for('serve_audio' ~ (i+1)) %}
+    						{% if audio_url is not none %}
+								<p> Audio Description<br> 
+									<audio controls preload="auto">
+										<!-- <source src="description.mp3" type="audio/mpeg"> -->
+										<!-- <source src="{{ url_for('static', filename='description.mp3') }}" type="file/mpeg"> -->
+										<source src="{{ url_for('serve_audio'~ (i+1))}}?{{ query_string }}" type="audio/mpeg">
+										Your browser does not support the audio element.
+							  		</audio>
+								</p>
+							{% else %}
+							  <p>Audio file not found.</p>
+							{% endif %}
+							<br>
+							<br>
+							{% endfor %}
+						</p>
+						{% else %}
+						<p>No objects were detected in this image.</p>
+						{% endif %}
+					</div>
+				</div>
+			</div>
+	</body>
+	</html>
+
+	{% if labels %}
 	<script>
-		const form = document.querySelector('form');
-		form.addEventListener('submit', async (e) => {
-			e.preventDefault();
-			const fileInput = document.querySelector('input[type=file]');
-			const file = fileInput.files[0];
-			const formData = new FormData();
-			formData.append('image', file);
-			const response = await fetch('/', {
-				method: 'POST',
-				body: formData
-			});
-			const data = await response.json();
-			const labelsDiv = document.querySelector('#labels');
-			if (data.labels.length > 0) {
-				let labels = '';
-				for (let label of data.labels) {
-					labels += `<p>${label}</p>`;
-				}
-				labelsDiv.innerHTML = `This image contains the following objects: ${labels}`;
-				const audio = document.querySelector('#audio');
-				audio.src = data.audio;
-				audio.play();
-			} else {
-				labelsDiv.innerHTML = 'No objects were detected in this image.';
+		var audioFiles=["{{ url_for('serve_audio')}}?{{ query_string }}","{{ url_for('serve_audio'~ (1))}}?{{ query_string }}",
+		 "{{ url_for('serve_audio'~ (2))}}?{{ query_string }}","{{ url_for('serve_audio'~ (3))}}?{{ query_string }}",
+		 "{{ url_for('serve_audio'~ (4))}}?{{ query_string }}","{{ url_for('serve_audio'~ (5))}}?{{ query_string }}"]
+		var currentAudio = 0;
+		var audioPlayer = new Audio(audioFiles[currentAudio]);
+		audioPlayer.play();
+
+		audioPlayer.addEventListener('ended', function() {
+			currentAudio++;
+			if (currentAudio < audioFiles.length) {
+			audioPlayer.src = audioFiles[currentAudio];
+			audioPlayer.play();
 			}
 		});
-	</script>
-</body>
-</html> -->
+	  </script>
 
-<!-- <!DOCTYPE html>
-<html>
-<head>
-    <title>Object Detection Results</title>
-</head>
-<body>
-    <h1>Object Detection Results</h1>
-    <p>The image contains the following objects:</p>
-    <ul>
-        {% for label in labels %}
-            <li>{{ label }}</li>
-        {% endfor %}
-    </ul>
-</body>
-</html> -->
-
-<!DOCTYPE html>
-<html>
-<head>
-	<title>Object Detection Result</title>
-</head>
-<body>
-	<h1>Object Detection Result</h1>
-	{% if labels %}
-		<p>This image contains: {{ labels|join(', ') }}.</p>
-		<p>And <audio>
-			<source src="description.mp3" type="audio/mpeg">
-			Your browser does not support the audio element.
-		  </audio></p>
 	{% else %}
-		<p>No objects were detected in this image.</p>
+	<audio controls preload="auto" autoplay="True">
+		<source src="{{ url_for('serve_audio') }}?{{ query_string }}" type="audio/mpeg">
+		Your browser does not support the audio element.
+	  </audio>
+
 	{% endif %}
-</body>
-</html>

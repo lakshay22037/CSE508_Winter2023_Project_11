@@ -145,7 +145,7 @@ body {
 /* Create three unequal columns that sits next to each other */
 .column {
   padding: 10px;
-  height: 400px; /* Should be removed. Only for demonstration */
+  height: 340px; /* Should be removed. Only for demonstration */
 }
 
 /* Left and right column */
@@ -177,26 +177,28 @@ body {
   }
 }
 
-#loading {
-		position: fixed;
-		display: block;
-		width: 100%;
-		height: 100%;
-		top: 0;
-		left: 0;
-		text-align: center;
-		opacity: 0.7;
-		background-color: #fff;
-		z-index: 99;
-}
-
-#loading-image {
-		position: absolute;
-		top: 100px;
-		left: 240px;
-		z-index: 100;
-}
-		</style>
+				.loading {
+				  position: fixed;
+				  top: 0;
+				  left: 0;
+				  width: 100%;
+				  height: 100%;
+				  background-color: rgba(255, 255, 255, 0.638);
+				  display: flex;
+				  justify-content: center;
+				  align-items: center;
+				  z-index: 9999;
+				}
+				.loading img {
+				  width: 100px;
+				  height: 100px;
+				}
+			  </style>
+			  <script>
+				window.addEventListener('beforeunload', function () {
+				  document.querySelector('.loading').style.display = 'flex';
+				});
+			  </script>
 </head>
 <body>
             <div class="header">
@@ -209,12 +211,12 @@ body {
                     <form action="/upload" method="post" enctype="multipart/form-data" class="div-element3" id="center">
                         <input type="file" name="image" accept="image/*" class="button">
                         <br><br>
-                        <input type="submit" value="Upload" class="button2">
+                        <input type="submit" value="Upload" class="button2" onclick="return checkFileUpload()">
                     </form></div>
                 <div class="column middle" style="background-color:#dfdede;">
                     <h3 class="div-element" id="center">1. Kindly Choose a Image file of jpg, jpeg or png format and click on Upload!</h3>
-                    <h3 class="div-element" id="center">2. We Will Return you the information about the uploaded image with audio description. </h3>
-                    <h3 class="div-element" id="center">3. And Also Along with the top 5 similar images with their description.</h3>
+                    <h3 class="div-element" id="center">2. We will Return you the information about the uploaded image with audio description. </h3>
+                    <h3 class="div-element" id="center">3. And Along with that, the top 5 similar images with their description and Audios!.</h3>
                     <br>
                 </div>
               </div>
@@ -225,14 +227,33 @@ body {
                 <h3>Image Retrieval & Audio Summarization</h3>
                 <h3>Group Members: Abhishek Acharya, Arha Samanta, Pijush Bhuyan, Lakshay Wadhwa</h3>
               </div>
-              <div id="loading">
+              <!-- <div id="loading">
 				<img id="loading-image" src="Search.gif" alt="Loading..." />
-			</div>
+			</div> -->
+			
+			  <!-- <img src="Search.gif" alt="Loading animation"> -->
+			  <div class="loading" style="display: none;">
+				<img src="{{ image_url }}" alt="Uploaded image">
+				<br>
+				<p style="font-weight: bold; font-size: 24px;">   Finding Results. Please wait...</p>
+			  </div>
 </body>
 </html>
 
-<script>
+<!-- <script>
     $(window).on('load', function () {
       $('#loading').hide();
     }) 
+</script> -->
+
+<script>
+    function checkFileUpload() {
+        var fileUpload = document.querySelector('input[type="file"]');
+        if (fileUpload.files.length === 0) {
+            alert("Please select a file to upload.");
+            return false;
+        } else {
+            return true;
+        }
+    }
 </script>
