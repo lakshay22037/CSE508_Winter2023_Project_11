@@ -14,7 +14,7 @@ from scipy.spatial.distance import cosine
 from tensorflow.python.ops.numpy_ops import np_config
 
 # Load the inverted Index 
-with open('static/clustering_index.pkl', 'rb') as file:
+with open('static/clustering_index_efn.pkl', 'rb') as file:
     # Call load method to deserialize
     index1 = pickle.load(file)
 
