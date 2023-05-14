@@ -3,6 +3,7 @@
 In Project Final Deliverables, run the python file after downloading all the required files in the respective sub folders.
 
 Image Retrieval and Audio Summarization for Blinds
+
 Our project focused on similar image retrieval and audio summarization for the visually
 impaired. We utilized an autoencoder and deep CNN classifier to extract image embeddings
 from the CIFAR-100 dataset, and subsequently built an inverted index and performed
